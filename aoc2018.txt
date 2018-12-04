@@ -6296,7 +6296,7 @@ mvoSpec :: HasMainViewOpts c_a1uCl => Lens' c_a1uCl TestSpec
 mvoWait :: HasMainViewOpts c_a1uCl => Lens' c_a1uCl Bool
 
 -- | View prompt
-mainView :: (MonadIO m, MonadError [String] m, Alternative m) => Config -> MainViewOpts -> m (Map (Finite 25) (Map Char Text))
+mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map (Finite 25) (Map Char Text))
 
 -- | Default options for <a>mainView</a>.
 defaultMVO :: TestSpec -> MainViewOpts
