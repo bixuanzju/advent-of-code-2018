@@ -149,44 +149,6 @@ instance GHC.Show.Show AOC2018.Solver.SolutionError
 instance Control.DeepSeq.NFData AOC2018.Solver.SolutionError
 
 
--- | Template Haskell for discovering all named challenges in a given
---   directory.
-module AOC2018.Discover
-
--- | Meant to be called like:
---   
---   <pre>
---   mkChallengeMap $$(solutionList "src/AOC2018/Challenge")
---   </pre>
-mkChallengeMap :: [(Finite 25, (Char, SomeSolution))] -> ChallengeMap
-
--- | Template Haskell splice to produce a list of all named solutions in a
---   directory. Expects solutions as function names following the format
---   <tt>dayDDp</tt>, where <tt>DD</tt> is a two-digit zero-added day, and
---   <tt>p</tt> is a lower-case letter corresponding to the part of the
---   challenge.
---   
---   See <a>mkChallengeMap</a> for a description of usage.
-solutionList :: FilePath -> Q (TExp [(Finite 25, (Char, SomeSolution))])
-
--- | A map of days to parts to solutions.
-type ChallengeMap = Map (Finite 25) (Map Char SomeSolution)
-
--- | A specification for a specific challenge. Should consist of a day and
---   a lowercase character.
-data ChallengeSpec
-CS :: Finite 25 -> Char -> ChallengeSpec
-[_csDay] :: ChallengeSpec -> Finite 25
-[_csPart] :: ChallengeSpec -> Char
-
--- | Turn a day represented by a <tt><a>Finite</a> 25</tt> into an integer
---   day (1 - 25).
-dayToInt :: Finite 25 -> Int
-instance GHC.Classes.Ord AOC2018.Discover.ChallengeSpec
-instance GHC.Classes.Eq AOC2018.Discover.ChallengeSpec
-instance GHC.Show.Show AOC2018.Discover.ChallengeSpec
-
-
 -- | Custom Prelude while developing challenges. Ideally, once challenges
 --   are completed, an import to this module would be replaced with
 --   explicit ones for future readers.
@@ -5479,6 +5441,51 @@ day04a :: _ :~> _
 day04b :: _ :~> _
 
 
+-- | Template Haskell for discovering all named challenges in a given
+--   directory.
+module AOC2018.Discover
+
+-- | Meant to be called like:
+--   
+--   <pre>
+--   mkChallengeMap $$(solutionList "src/AOC2018/Challenge")
+--   </pre>
+mkChallengeMap :: [(Finite 25, (Char, SomeSolution))] -> ChallengeMap
+
+-- | Template Haskell splice to produce a list of all named solutions in a
+--   directory. Expects solutions as function names following the format
+--   <tt>dayDDp</tt>, where <tt>DD</tt> is a two-digit zero-added day, and
+--   <tt>p</tt> is a lower-case letter corresponding to the part of the
+--   challenge.
+--   
+--   See <a>mkChallengeMap</a> for a description of usage.
+solutionList :: FilePath -> Q (TExp [(Finite 25, (Char, SomeSolution))])
+
+-- | A map of days to parts to solutions.
+type ChallengeMap = Map (Finite 25) (Map Char SomeSolution)
+
+-- | A specification for a specific challenge. Should consist of a day and
+--   a lowercase character.
+data ChallengeSpec
+CS :: Finite 25 -> Char -> ChallengeSpec
+[_csDay] :: ChallengeSpec -> Finite 25
+[_csPart] :: ChallengeSpec -> Char
+
+-- | Turn a day represented by a <tt><a>Finite</a> 25</tt> into an integer
+--   day (1 - 25).
+dayToInt :: Finite 25 -> Int
+
+-- | Get a <a>ChallengeSpec</a> from a given reified solution (name).
+--   
+--   <pre>
+--   solSpec 'day02a == CS { _csDay = 1, _csPart = <tt>a</tt> }
+--   </pre>
+solSpec :: Name -> ChallengeSpec
+instance GHC.Classes.Ord AOC2018.Discover.ChallengeSpec
+instance GHC.Classes.Eq AOC2018.Discover.ChallengeSpec
+instance GHC.Show.Show AOC2018.Discover.ChallengeSpec
+
+
 -- | Day 3. See <a>AOC2018.Solver</a> for the types used in this module!
 module AOC2018.Challenge.Day03
 
@@ -5548,6 +5555,13 @@ lookupSolution :: ChallengeSpec -> Map (Finite 25) (Map Char a) -> Maybe a
 -- | Turn a day represented by a <tt><a>Finite</a> 25</tt> into an integer
 --   day (1 - 25).
 dayToInt :: Finite 25 -> Int
+
+-- | Get a <a>ChallengeSpec</a> from a given reified solution (name).
+--   
+--   <pre>
+--   solSpec 'day02a == CS { _csDay = 1, _csPart = <tt>a</tt> }
+--   </pre>
+solSpec :: Name -> ChallengeSpec
 
 
 -- | Haskell bindings for Advent of Code 2018 REST API.
@@ -5684,13 +5698,13 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Finite 25 -> Char -> IO (Maybe S
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Finite 25 -> Char -> IO (Maybe String)
-class HasMainRunOpts c_a1r5j
-mainRunOpts :: HasMainRunOpts c_a1r5j => Lens' c_a1r5j MainRunOpts
-mroBench :: HasMainRunOpts c_a1r5j => Lens' c_a1r5j Bool
-mroInput :: HasMainRunOpts c_a1r5j => Lens' c_a1r5j (Finite 25 -> Char -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a1r5j => Lens' c_a1r5j Bool
-mroSpec :: HasMainRunOpts c_a1r5j => Lens' c_a1r5j TestSpec
-mroTest :: HasMainRunOpts c_a1r5j => Lens' c_a1r5j Bool
+class HasMainRunOpts c_a1rpa
+mainRunOpts :: HasMainRunOpts c_a1rpa => Lens' c_a1rpa MainRunOpts
+mroBench :: HasMainRunOpts c_a1rpa => Lens' c_a1rpa Bool
+mroInput :: HasMainRunOpts c_a1rpa => Lens' c_a1rpa (Finite 25 -> Char -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a1rpa => Lens' c_a1rpa Bool
+mroSpec :: HasMainRunOpts c_a1rpa => Lens' c_a1rpa TestSpec
+mroTest :: HasMainRunOpts c_a1rpa => Lens' c_a1rpa Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map (Finite 25) (Map Char (Maybe Bool, Either [String] String)))
@@ -5703,10 +5717,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a1rbY
-mainViewOpts :: HasMainViewOpts c_a1rbY => Lens' c_a1rbY MainViewOpts
-mvoSpec :: HasMainViewOpts c_a1rbY => Lens' c_a1rbY TestSpec
-mvoWait :: HasMainViewOpts c_a1rbY => Lens' c_a1rbY Bool
+class HasMainViewOpts c_a1rvP
+mainViewOpts :: HasMainViewOpts c_a1rvP => Lens' c_a1rvP MainViewOpts
+mvoSpec :: HasMainViewOpts c_a1rvP => Lens' c_a1rvP TestSpec
+mvoWait :: HasMainViewOpts c_a1rvP => Lens' c_a1rvP Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m, Alternative m) => Config -> MainViewOpts -> m (Map (Finite 25) (Map Char Text))
@@ -5727,12 +5741,12 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 
 -- | Lock answer if submission succeeded? (Default: True)
 [_msoLock] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a1rgl
-mainSubmitOpts :: HasMainSubmitOpts c_a1rgl => Lens' c_a1rgl MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a1rgl => Lens' c_a1rgl Bool
-msoLock :: HasMainSubmitOpts c_a1rgl => Lens' c_a1rgl Bool
-msoSpec :: HasMainSubmitOpts c_a1rgl => Lens' c_a1rgl ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a1rgl => Lens' c_a1rgl Bool
+class HasMainSubmitOpts c_a1rAc
+mainSubmitOpts :: HasMainSubmitOpts c_a1rAc => Lens' c_a1rAc MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a1rAc => Lens' c_a1rAc Bool
+msoLock :: HasMainSubmitOpts c_a1rAc => Lens' c_a1rAc Bool
+msoSpec :: HasMainSubmitOpts c_a1rAc => Lens' c_a1rAc ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a1rAc => Lens' c_a1rAc Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
