@@ -5640,6 +5640,15 @@ CD :: !Either [String] Text -> !Either [String] String -> !Maybe String -> ![(St
 --   fetch answers online and cache if required (and if giten a session
 --   token).
 challengeData :: Maybe String -> ChallengeSpec -> IO ChallengeData
+
+-- | Run a countdown on the console.
+countdownConsole :: MonadIO m => Finite 25 -> m a -> m a
+
+-- | Get time until next release
+timeToRelease :: Finite 25 -> IO NominalDiffTime
+
+-- | Pretty-print a <a>NominalDiffTime</a>
+showNominalDiffTime :: NominalDiffTime -> String
 instance GHC.Show.Show AOC2018.Run.Load.ChallengePaths
 
 
@@ -5673,13 +5682,13 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Map (Finite 25) (Map Char String
 
 -- | Manually supply input. (Default: <a>empty</a>)
 [_mroInput] :: MainRunOpts -> !Map (Finite 25) (Map Char String)
-class HasMainRunOpts c_a1qcR
-mainRunOpts :: HasMainRunOpts c_a1qcR => Lens' c_a1qcR MainRunOpts
-mroBench :: HasMainRunOpts c_a1qcR => Lens' c_a1qcR Bool
-mroInput :: HasMainRunOpts c_a1qcR => Lens' c_a1qcR (Map (Finite 25) (Map Char String))
-mroLock :: HasMainRunOpts c_a1qcR => Lens' c_a1qcR Bool
-mroSpec :: HasMainRunOpts c_a1qcR => Lens' c_a1qcR TestSpec
-mroTest :: HasMainRunOpts c_a1qcR => Lens' c_a1qcR Bool
+class HasMainRunOpts c_a1r4R
+mainRunOpts :: HasMainRunOpts c_a1r4R => Lens' c_a1r4R MainRunOpts
+mroBench :: HasMainRunOpts c_a1r4R => Lens' c_a1r4R Bool
+mroInput :: HasMainRunOpts c_a1r4R => Lens' c_a1r4R (Map (Finite 25) (Map Char String))
+mroLock :: HasMainRunOpts c_a1r4R => Lens' c_a1r4R Bool
+mroSpec :: HasMainRunOpts c_a1r4R => Lens' c_a1r4R TestSpec
+mroTest :: HasMainRunOpts c_a1r4R => Lens' c_a1r4R Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map (Finite 25) (Map Char (Maybe Bool, Either [String] String)))
@@ -5688,15 +5697,20 @@ mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map
 defaultMRO :: TestSpec -> MainRunOpts
 
 -- | Options for <a>mainView</a>.
-newtype MainViewOpts
-MVO :: TestSpec -> MainViewOpts
-[_mvoSpec] :: MainViewOpts -> TestSpec
-class HasMainViewOpts c_a1qj7
-mainViewOpts :: HasMainViewOpts c_a1qj7 => Lens' c_a1qj7 MainViewOpts
-mvoSpec :: HasMainViewOpts c_a1qj7 => Lens' c_a1qj7 TestSpec
+data MainViewOpts
+MVO :: !TestSpec -> !Bool -> MainViewOpts
+[_mvoSpec] :: MainViewOpts -> !TestSpec
+[_mvoWait] :: MainViewOpts -> !Bool
+class HasMainViewOpts c_a1rbo
+mainViewOpts :: HasMainViewOpts c_a1rbo => Lens' c_a1rbo MainViewOpts
+mvoSpec :: HasMainViewOpts c_a1rbo => Lens' c_a1rbo TestSpec
+mvoWait :: HasMainViewOpts c_a1rbo => Lens' c_a1rbo Bool
 
 -- | View prompt
-mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map (Finite 25) (Map Char Text))
+mainView :: (MonadIO m, MonadError [String] m, Alternative m) => Config -> MainViewOpts -> m (Map (Finite 25) (Map Char Text))
+
+-- | Default options for <a>mainView</a>.
+defaultMVO :: TestSpec -> MainViewOpts
 
 -- | Options for <a>mainSubmit</a>
 data MainSubmitOpts
@@ -5711,12 +5725,12 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 
 -- | Lock answer if submission succeeded? (Default: True)
 [_msoLock] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a1qp6
-mainSubmitOpts :: HasMainSubmitOpts c_a1qp6 => Lens' c_a1qp6 MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a1qp6 => Lens' c_a1qp6 Bool
-msoLock :: HasMainSubmitOpts c_a1qp6 => Lens' c_a1qp6 Bool
-msoSpec :: HasMainSubmitOpts c_a1qp6 => Lens' c_a1qp6 ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a1qp6 => Lens' c_a1qp6 Bool
+class HasMainSubmitOpts c_a1rfL
+mainSubmitOpts :: HasMainSubmitOpts c_a1rfL => Lens' c_a1rfL MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a1rfL => Lens' c_a1rfL Bool
+msoLock :: HasMainSubmitOpts c_a1rfL => Lens' c_a1rfL Bool
+msoSpec :: HasMainSubmitOpts c_a1rfL => Lens' c_a1rfL ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a1rfL => Lens' c_a1rfL Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
@@ -5755,6 +5769,10 @@ testSolution :: ChallengeSpec -> IO (Maybe Bool)
 -- | View the prompt for a given challenge spec.
 viewPrompt :: ChallengeSpec -> IO Text
 
+-- | Countdown to get the prompt for a given challenge spec, if not yet
+--   available.
+waitForPrompt :: ChallengeSpec -> IO Text
+
 -- | Submit solution for a given challenge spec, and lock if correct.
 submitSolution :: ChallengeSpec -> IO (Text, SubmitRes)
 
@@ -5769,6 +5787,9 @@ testSolution_ :: ChallengeSpec -> IO ()
 
 -- | Result-suppressing version of <a>viewPrompt</a>.
 viewPrompt_ :: ChallengeSpec -> IO ()
+
+-- | Result-suppressing version of <a>waitForPrompt</a>.
+waitForPrompt_ :: ChallengeSpec -> IO ()
 
 -- | Result-suppressing version of <a>submitSolution</a>.
 submitSolution_ :: ChallengeSpec -> IO ()
