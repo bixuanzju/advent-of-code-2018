@@ -101,6 +101,17 @@ maximumVal :: Ord b => Map a b -> Maybe (a, b)
 --   </pre>
 maximumValBy :: (b -> b -> Ordering) -> Map a b -> Maybe (a, b)
 
+-- | Get the key-value pair corresponding to the minimum value in the map
+minimumVal :: Ord b => Map a b -> Maybe (a, b)
+
+-- | Get the key-value pair corresponding to the minimum value in the map,
+--   with a custom comparing function.
+--   
+--   <pre>
+--   'minimumVal' == 'minimumValBy' 'compare'
+--   </pre>
+minimumValBy :: (b -> b -> Ordering) -> Map a b -> Maybe (a, b)
+
 
 -- | Types to drive the challenge runner and help speed up/clean up
 --   solutions.
@@ -5593,6 +5604,17 @@ maximumVal :: Ord b => Map a b -> Maybe (a, b)
 --   </pre>
 maximumValBy :: (b -> b -> Ordering) -> Map a b -> Maybe (a, b)
 
+-- | Get the key-value pair corresponding to the minimum value in the map,
+--   with a custom comparing function.
+--   
+--   <pre>
+--   'minimumVal' == 'minimumValBy' 'compare'
+--   </pre>
+minimumValBy :: (b -> b -> Ordering) -> Map a b -> Maybe (a, b)
+
+-- | Get the key-value pair corresponding to the minimum value in the map
+minimumVal :: Ord b => Map a b -> Maybe (a, b)
+
 -- | Errors that might happen when running a <a>:~&gt;</a> on some input.
 data SolutionError
 SEParse :: SolutionError
@@ -5997,6 +6019,8 @@ module AOC2018.Challenge.Day06
 --   will recommend what should go in place of the underscores.</li>
 --   </ul>
 module AOC2018.Challenge.Day05
+day05a :: String :~> Int
+day05b :: String :~> Int
 
 
 -- | Template Haskell for discovering all named challenges in a given
@@ -6147,8 +6171,6 @@ data API :: Bool -> Type -> Type
 
 -- | Fetch prompts, as Markdown.
 [APrompt] :: Finite 25 -> API  'False (Map Char Text)
-
--- | Fetch input
 [AInput] :: Finite 25 -> API  'True Text
 
 -- | Submit answer.
@@ -6271,13 +6293,13 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Finite 25 -> Char -> IO (Maybe S
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Finite 25 -> Char -> IO (Maybe String)
-class HasMainRunOpts c_a1uuS
-mainRunOpts :: HasMainRunOpts c_a1uuS => Lens' c_a1uuS MainRunOpts
-mroBench :: HasMainRunOpts c_a1uuS => Lens' c_a1uuS Bool
-mroInput :: HasMainRunOpts c_a1uuS => Lens' c_a1uuS (Finite 25 -> Char -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a1uuS => Lens' c_a1uuS Bool
-mroSpec :: HasMainRunOpts c_a1uuS => Lens' c_a1uuS TestSpec
-mroTest :: HasMainRunOpts c_a1uuS => Lens' c_a1uuS Bool
+class HasMainRunOpts c_a1uTp
+mainRunOpts :: HasMainRunOpts c_a1uTp => Lens' c_a1uTp MainRunOpts
+mroBench :: HasMainRunOpts c_a1uTp => Lens' c_a1uTp Bool
+mroInput :: HasMainRunOpts c_a1uTp => Lens' c_a1uTp (Finite 25 -> Char -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a1uTp => Lens' c_a1uTp Bool
+mroSpec :: HasMainRunOpts c_a1uTp => Lens' c_a1uTp TestSpec
+mroTest :: HasMainRunOpts c_a1uTp => Lens' c_a1uTp Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map (Finite 25) (Map Char (Maybe Bool, Either [String] String)))
@@ -6290,10 +6312,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a1uBx
-mainViewOpts :: HasMainViewOpts c_a1uBx => Lens' c_a1uBx MainViewOpts
-mvoSpec :: HasMainViewOpts c_a1uBx => Lens' c_a1uBx TestSpec
-mvoWait :: HasMainViewOpts c_a1uBx => Lens' c_a1uBx Bool
+class HasMainViewOpts c_a1v04
+mainViewOpts :: HasMainViewOpts c_a1v04 => Lens' c_a1v04 MainViewOpts
+mvoSpec :: HasMainViewOpts c_a1v04 => Lens' c_a1v04 TestSpec
+mvoWait :: HasMainViewOpts c_a1v04 => Lens' c_a1v04 Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map (Finite 25) (Map Char Text))
@@ -6314,12 +6336,12 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 
 -- | Lock answer if submission succeeded? (Default: True)
 [_msoLock] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a1uFU
-mainSubmitOpts :: HasMainSubmitOpts c_a1uFU => Lens' c_a1uFU MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a1uFU => Lens' c_a1uFU Bool
-msoLock :: HasMainSubmitOpts c_a1uFU => Lens' c_a1uFU Bool
-msoSpec :: HasMainSubmitOpts c_a1uFU => Lens' c_a1uFU ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a1uFU => Lens' c_a1uFU Bool
+class HasMainSubmitOpts c_a1v4r
+mainSubmitOpts :: HasMainSubmitOpts c_a1v4r => Lens' c_a1v4r MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a1v4r => Lens' c_a1v4r Bool
+msoLock :: HasMainSubmitOpts c_a1v4r => Lens' c_a1v4r Bool
+msoSpec :: HasMainSubmitOpts c_a1v4r => Lens' c_a1v4r ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a1v4r => Lens' c_a1v4r Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
