@@ -6004,25 +6004,6 @@ module AOC2018.Challenge.Day07
 module AOC2018.Challenge.Day06
 
 
--- | Day 5. See <a>AOC2018.Solver</a> for the types used in this module!
---   
---   After completing the challenge, it is recommended to:
---   
---   <ul>
---   <li>Replace <a>AOC2018.Prelude</a> imports to specific modules (with
---   explicit imports) for readability.</li>
---   <li>Remove the <tt>-Wno-unused-imports</tt> and
---   <tt>-Wno-unused-top-binds</tt> pragmas.</li>
---   <li>Replace the partial type signatures underscores in the solution
---   types <tt>_ :~&gt; _</tt> with the actual types of inputs and outputs
---   of the solution. You can delete the type signatures completely and GHC
---   will recommend what should go in place of the underscores.</li>
---   </ul>
-module AOC2018.Challenge.Day05
-day05a :: String :~> Int
-day05b :: String :~> Int
-
-
 -- | Template Haskell for discovering all named challenges in a given
 --   directory.
 module AOC2018.Discover
@@ -6066,6 +6047,12 @@ solSpec :: Name -> ChallengeSpec
 instance GHC.Classes.Ord AOC2018.Discover.ChallengeSpec
 instance GHC.Classes.Eq AOC2018.Discover.ChallengeSpec
 instance GHC.Show.Show AOC2018.Discover.ChallengeSpec
+
+
+-- | Day 5. See <a>AOC2018.Solver</a> for the types used in this module!
+module AOC2018.Challenge.Day05
+day05a :: String :~> Int
+day05b :: String :~> Int
 
 
 -- | Day 4. See <a>AOC2018.Solver</a> for the types used in this module!
